@@ -613,7 +613,7 @@ QWidget* StatsDock::buildHome() {
     footer_->setObjectName("Credit");footer_->setTextFormat(Qt::RichText);
     footer_->setTextInteractionFlags(Qt::LinksAccessibleByMouse|Qt::LinksAccessibleByKeyboard);
     footer_->setOpenExternalLinks(true);footer_->setAlignment(Qt::AlignCenter);
-    footer_->setFixedHeight(22);footer_->setToolTip("Stream Stats · OTMOPOZOK");footerLayout->addWidget(footer_);
+    footer_->setFixedHeight(20);footer_->setToolTip("Stream Stats · OTMOPOZOK");footerLayout->addWidget(footer_);
     outer->addWidget(footerWidget);
     setRange(rangeMinutes_);
     return page;
