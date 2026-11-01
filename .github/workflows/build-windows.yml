@@ -1,4 +1,4 @@
-name: Build Stream Stats 1.0 (Windows)
+name: Build OZK Stats 1.0 (Windows)
 on:
   push:
     branches: ["main", "codex/stream-stats-build"]
@@ -32,7 +32,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: StreamStats-UI-Previews
+          name: OZKStats-UI-Previews
           path: ui-previews/*.png
           if-no-files-found: ignore
       - name: Stage OBS plugin
@@ -58,9 +58,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Binary inspection failed' }
           $audit | Set-Content package/BINARY_AUDIT.txt -Encoding utf8
           if (!($audit -match '8664 machine') -or !($audit -match 'Dynamic base') -or !($audit -match 'NX compatible')) { throw 'Expected x64/ASLR/DEP protections missing' }
-          [ordered]@{product='Stream Stats';version=$spec.version;commit=$env:GITHUB_SHA;obs='33.0.0';qt='6.11.1';packageType='unsigned-test-build';dllSha256=(Get-FileHash $dll.FullName -Algorithm SHA256).Hash}|ConvertTo-Json|Set-Content package/BUILD_INFO.json -Encoding utf8
+          [ordered]@{product='OZK Stats';version=$spec.version;commit=$env:GITHUB_SHA;obs='33.0.0';qt='6.11.1';packageType='unsigned-test-build';dllSha256=(Get-FileHash $dll.FullName -Algorithm SHA256).Hash}|ConvertTo-Json|Set-Content package/BUILD_INFO.json -Encoding utf8
       - uses: actions/upload-artifact@v4
         with:
-          name: StreamStats-1.1.3-OBS33-Windows-x64
+          name: OZKStats-1.1.4-OBS33-Windows-x64
           path: package/
           if-no-files-found: error

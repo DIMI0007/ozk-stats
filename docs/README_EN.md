@@ -1,8 +1,8 @@
-# Stream Stats
+# OZK Stats
 
 System load, streaming and recording in one OBS panel. The layout works vertically and horizontally.
 
-![Stream Stats](screenshots/vertical.png)
+![OZK Stats](screenshots/vertical.png)
 
 ## Features
 
@@ -16,13 +16,13 @@ System load, streaming and recording in one OBS panel. The layout works vertical
 
 ## How the plugins work together
 
-Stream Stats works on its own for system, streaming and recording statistics. Three separate Twitch, YouTube and Kick outputs appear as three streams and their bitrate is added together. If Chat or Notify is installed, Stats reads its local counters inside OBS. A missing plugin appears as “Not loaded.” Stats does not receive chat messages, send announcements or transfer network traffic between plugins.
+OZK Stats works on its own for system, streaming and recording statistics. Three separate Twitch, YouTube and Kick outputs appear as three streams and their bitrate is added together. If Chat or Notify is installed, Stats reads its local counters inside OBS. A missing plugin appears as “Not loaded.” Stats does not receive chat messages, send announcements or transfer network traffic between plugins.
 
 ## Install
 
-1. Close OBS. Download **StreamStats-1.1.2-OBS33-Windows-x64** from the [latest successful build](https://github.com/DIMI0007/stream-stats/actions/workflows/build-windows.yml) and extract the ZIP.
+1. Close OBS. Download **OZKStats-1.1.4-OBS33-Windows-x64** from the [latest successful build](https://github.com/DIMI0007/ozk-stats/actions/workflows/build-windows.yml) and extract the ZIP.
 2. Open `C:\ProgramData\obs-studio\plugins\`. Replace the old `stream-stats` folder with the complete folder from the ZIP.
-3. Start OBS and open **Docks → Stream Stats**.
+3. Start OBS and open **Docks → OZK Stats**.
 
 For OBS Studio 33 on Windows x64. The build is unsigned. GPU usage covers all applications, and local OBS stream activity does not confirm that a platform is live for viewers.
 

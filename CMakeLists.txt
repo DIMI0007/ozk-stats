@@ -7,7 +7,7 @@ include(defaults)
 include(helpers)
 
 if(NOT WIN32 OR NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-  message(FATAL_ERROR "Stream Stats 1.0 targets Windows x64")
+  message(FATAL_ERROR "OZK Stats 1.0 targets Windows x64")
 endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

@@ -474,7 +474,7 @@ QWidget* StatsDock::buildHome() {
     outer->setContentsMargins(8,8,8,3);outer->setSpacing(5);
     auto* top=new QHBoxLayout;top->setContentsMargins(2,2,2,2);top->setSpacing(7);headerLayout_=top;
     top->addWidget(new StatsMark,0,Qt::AlignVCenter);
-    auto* heading=new QLabel("Stream Stats");heading->setObjectName("DockTitle");top->addWidget(heading,1);
+    auto* heading=new QLabel("<span style='color:#57dfd1'>OZK</span> Stats");heading->setObjectName("DockTitle");heading->setTextFormat(Qt::RichText);heading->setAccessibleName("OZK Stats");top->addWidget(heading,1);
     for(int minutes:{1,5,15}){
         auto* button=new QPushButton(QString::number(minutes)+phrase(" м"," m"));
         button->setFixedSize(34,22);button->setProperty("HistoryRange",true);button->setToolTip(phrase("История графиков","Chart history"));
@@ -576,7 +576,7 @@ QWidget* StatsDock::buildHome() {
         "Chat and Notify traffic since OBS started. Connected means their local counters are reachable."));
     peersPanel_=new QWidget;peersPanel_->setObjectName("PeersPanel");
     auto* peersLayout=new QVBoxLayout(peersPanel_);peersLayout->setContentsMargins(7,5,7,5);peersLayout->setSpacing(3);
-    const char* names[]={"Stream Chat","Stream Notify","Stream Stats"};
+    const char* names[]={"OZK Chat","OZK Notify","OZK Stats"};
     for(int i=0;i<3;++i){
         auto* peer=new QWidget;peer->setObjectName("PeerRow");
         auto* peerLayout=new QVBoxLayout(peer);peerLayout->setContentsMargins(5,3,5,3);peerLayout->setSpacing(1);
@@ -613,7 +613,7 @@ QWidget* StatsDock::buildHome() {
     footer_->setObjectName("Credit");footer_->setTextFormat(Qt::RichText);
     footer_->setTextInteractionFlags(Qt::LinksAccessibleByMouse|Qt::LinksAccessibleByKeyboard);
     footer_->setOpenExternalLinks(true);footer_->setAlignment(Qt::AlignCenter);
-    footer_->setFixedHeight(20);footer_->setToolTip("Stream Stats · OTMOPOZOK");footerLayout->addWidget(footer_);
+    footer_->setFixedHeight(20);footer_->setToolTip("OZK Stats · OTMOPOZOK");footerLayout->addWidget(footer_);
     outer->addWidget(footerWidget);
     setRange(rangeMinutes_);
     return page;
@@ -849,8 +849,8 @@ void StatsDock::updateSnapshot(const Snapshot& value,bool collect){
         phrase("Размер текущего файла на диске","Current file size on disk"));
     recordSpeed_->setText(value.record.active?locale.toString(value.record.megabytesPerSecond,'f',1)+" MB/s":"—");
     recordTime_->setText(value.record.active?duration(value.record.elapsedSeconds):"—");
-    recordTime_->setToolTip(phrase("Время записи с момента, когда Stream Stats увидел её запуск; паузы исключены.",
-        "Recording time since Stream Stats observed its start; pauses excluded."));
+    recordTime_->setToolTip(phrase("Время записи с момента, когда OZK Stats увидел её запуск; паузы исключены.",
+        "Recording time since OZK Stats observed its start; pauses excluded."));
     recordDisk_->setText(value.record.diskAvailable?bytesText(value.record.freeBytes,locale):"—");
     recordEta_->setText(value.record.secondsUntilFull>=0?duration(value.record.secondsUntilFull):"—");
     systemChart_->setInactiveMessage(systemMetricIndex_==2&&gpuHistory_.count()==0?

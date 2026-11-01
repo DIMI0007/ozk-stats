@@ -16,12 +16,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "${PLUGIN_AUTHOR}"
-            VALUE "FileDescription", "Stream Stats for OBS Studio"
+            VALUE "FileDescription", "OZK Stats for OBS Studio"
             VALUE "FileVersion", "${PROJECT_VERSION}"
             VALUE "InternalName", "${PROJECT_NAME}"
             VALUE "LegalCopyright", "(C) ${CURRENT_YEAR} ${PLUGIN_AUTHOR}"
             VALUE "OriginalFilename", "${PROJECT_NAME}.dll"
-            VALUE "ProductName", "Stream Stats"
+            VALUE "ProductName", "OZK Stats"
             VALUE "ProductVersion", "${PROJECT_VERSION}"
         END
     END

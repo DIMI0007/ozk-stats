@@ -84,6 +84,6 @@ int main(int argc,char** argv) {
     auto* summary=dock.findChild<QPushButton*>("SessionSummaryButton");if(!summary)return 12;summary->click();app.processEvents();
     auto* summaryText=dock.findChild<QLabel*>("SessionSummaryText");if(!summaryText||summaryText->text().isEmpty())return 13;
     if(!dock.grab().save(output+"/session-summary.png"))return 14;
-    std::puts("Responsive Stream Stats UI previews passed");
+    std::puts("Responsive OZK Stats UI previews passed");
     return 0;
 }

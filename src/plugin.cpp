@@ -41,8 +41,8 @@ void installDock(){
     auto* window=static_cast<QMainWindow*>(obs_frontend_get_main_window());
     if(!window)return;
     auto* created=new stats::StatsDock;
-    if(!obs_frontend_add_dock_by_id("stream-stats-dock","Stream Stats",created)){
-        delete created;blog(LOG_ERROR,"[Stream Stats] Could not register dock");return;
+    if(!obs_frontend_add_dock_by_id("stream-stats-dock","OZK Stats",created)){
+        delete created;blog(LOG_ERROR,"[OZK Stats] Could not register dock");return;
     }
     panel=created;
     auto* dock=window->findChild<QDockWidget*>("stream-stats-dock");
@@ -71,12 +71,12 @@ void onFrontend(obs_frontend_event event,void*){
 }
 } // namespace
 
-MODULE_EXPORT const char* obs_module_name(void){return "Stream Stats";}
+MODULE_EXPORT const char* obs_module_name(void){return "OZK Stats";}
 MODULE_EXPORT const char* obs_module_description(void){return "Native OBS system, stream and recording statistics";}
 
 bool obs_module_load(void){
     exiting=false;obs_frontend_add_event_callback(onFrontend,nullptr);registered=true;
-    blog(LOG_INFO,"[Stream Stats] Version %s loaded",STREAM_STATS_VERSION);
+    blog(LOG_INFO,"[OZK Stats] Version %s loaded",STREAM_STATS_VERSION);
     return true;
 }
 void obs_module_unload(void){
