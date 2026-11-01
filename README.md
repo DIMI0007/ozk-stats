@@ -1,4 +1,4 @@
-# OZK Stats — статистика трансляции и записи в OBS
+# OZK Stats for OBS
 
 Часть набора **OZK StreamKit** от OTMOPOZOK. Работает и отдельно от остальных плагинов.
 
