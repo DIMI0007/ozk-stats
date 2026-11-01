@@ -52,6 +52,14 @@ struct OutputReading {
     quint64 dropped = 0;
 };
 
+struct OutputStatus {
+    QString name;
+    bool active = false;
+    bool reconnecting = false;
+    bool countersMissing = false;
+    double kbps = 0;
+};
+
 struct StreamReading {
     bool active = false;
     bool reconnecting = false;
@@ -62,6 +70,7 @@ struct StreamReading {
     quint64 dropped = 0;
     quint64 frames = 0;
     QStringList outputNames;
+    QVector<OutputStatus> outputs;
 };
 
 // One identity is counted once per sample, even if frontend and plugin APIs
@@ -89,8 +98,15 @@ public:
                 ? input.frames - previous.frames : input.frames;
             // The first observation has no measured interval. Existing counters
             // still contribute to session totals, but not to instant bitrate.
+            OutputStatus output;
+            output.name = input.name;
+            output.active = input.active;
+            output.reconnecting = input.reconnecting;
+            output.countersMissing = input.bytes == 0 && zeroSamples_.value(input.identity) >= 5;
             if (previous.seen && elapsedSeconds > 0 && elapsedSeconds < 10)
-                value.kbps += double(bytesDelta) * 8.0 / 1000.0 / elapsedSeconds;
+                output.kbps = double(bytesDelta) * 8.0 / 1000.0 / elapsedSeconds;
+            value.kbps += output.kbps;
+            value.outputs.push_back(output);
             totalBytes_ += bytesDelta;
             totalDropped_ += droppedDelta;
             totalFrames_ += framesDelta;

@@ -399,8 +399,9 @@ StatsDock::StatsDock(QWidget* parent):QWidget(parent) {
       QLabel#DockTitle{font-size:17px;font-weight:700;color:#e7fff4;}
       QLabel#OutputCount{color:#ffe184;background:#24301f;border:1px solid #70571b;border-radius:7px;font-size:10px;font-weight:700;padding:1px 6px;}
       QWidget#Footer{background:#080f18;}
-      QLabel#Credit{color:#9299a5;background:#080f18;font-size:11px;}
+      QLabel#Credit{color:#9badc2;background:#0b1723;border-top:1px solid #263b50;font-size:10px;}
       QLabel#SessionTrafficFooter{color:#72e9f4;background:#080f18;font-size:10px;}
+      QLabel#StreamOutputs{color:#b7c9dd;background:#0b1724;border:1px solid #263244;border-radius:5px;padding:4px 6px;font-size:10px;}
       QPushButton#PeersToggle{color:#72e9f4;background:#0b1724;border:1px solid #263244;border-radius:5px;text-align:left;padding:0 7px;font-size:10px;}
       QPushButton#PeersToggle:hover{background:#142438;border-color:#38516d;}
       QWidget#PeersPanel{background:#0b1724;border:1px solid #263244;border-radius:6px;}
@@ -535,6 +536,13 @@ QWidget* StatsDock::buildHome() {
     streamBitrate_=addMetric(metricGrids_[1],phrase("Общий битрейт","Total bitrate"),MetricGlyph::Upload,QColor("#ffdc45"));
     streamBytes_=addMetric(metricGrids_[1],phrase("Отправлено","Sent"),MetricGlyph::Data,QColor("#9eb9ff"));
     streamDrop_=addMetric(metricGrids_[1],phrase("Потери сети","Network loss"),MetricGlyph::Network,QColor("#ff8484"));
+    streamOutputs_=new QLabel;
+    streamOutputs_->setObjectName("StreamOutputs");
+    streamOutputs_->setTextFormat(Qt::RichText);
+    streamOutputs_->setWordWrap(true);
+    streamOutputs_->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);
+    streamOutputs_->hide();
+    body->addWidget(streamOutputs_);
     body->addStretch(1);
     streamChart_=new Chart({{&streamHistory_,QColor("#ffdc45")}});
     streamChart_->setSeries({{&streamHistory_,QColor("#ffdc45")}},"kb/s",phrase("Общий битрейт","Total bitrate"));
@@ -601,11 +609,11 @@ QWidget* StatsDock::buildHome() {
     auto* footerLayout=new QVBoxLayout(footerWidget);footerLayout->setContentsMargins(0,0,0,0);footerLayout->setSpacing(0);
     footerLayout->addWidget(peersToggle_);
     footerLayout->addWidget(peersPanel_);
-    footer_=new QLabel("developed by <a href=\"https://www.youtube.com/channel/UCTAKYR3T2Ud8zZgNShgQfyw/\" style=\"color:#59dfff;text-decoration:none;\">OTMOPOZOK</a> · v" STREAM_STATS_VERSION);
+    footer_=new QLabel("✦ <span style=\"color:#8ea1b8;\">by</span> <a href=\"https://www.youtube.com/channel/UCTAKYR3T2Ud8zZgNShgQfyw/\" style=\"color:#57dfd1;text-decoration:none;font-weight:700;\">OTMOPOZOK</a> <span style=\"color:#5e7790;\">·</span> <span style=\"color:#b3c5d7;\">v" STREAM_STATS_VERSION "</span>");
     footer_->setObjectName("Credit");footer_->setTextFormat(Qt::RichText);
     footer_->setTextInteractionFlags(Qt::LinksAccessibleByMouse|Qt::LinksAccessibleByKeyboard);
     footer_->setOpenExternalLinks(true);footer_->setAlignment(Qt::AlignCenter);
-    footer_->setFixedHeight(20);footerLayout->addWidget(footer_);
+    footer_->setFixedHeight(22);footer_->setToolTip("Stream Stats · OTMOPOZOK");footerLayout->addWidget(footer_);
     outer->addWidget(footerWidget);
     setRange(rangeMinutes_);
     return page;
@@ -811,6 +819,19 @@ void StatsDock::updateSnapshot(const Snapshot& value,bool collect){
     streamCount_->setToolTip(value.stream.outputNames.isEmpty()?
         phrase("Учтённых потоковых выходов OBS","Counted OBS stream outputs"):
         phrase("Учтённые выходы OBS: ","Counted OBS outputs: ")+value.stream.outputNames.join(", "));
+    QStringList outputRows;
+    int outputIndex=0;
+    for(const auto& output:value.stream.outputs){
+        const auto name=(output.name.isEmpty()?phrase("Вывод ","Output ")+QString::number(++outputIndex):output.name).toHtmlEscaped();
+        const auto status=output.reconnecting?phrase("переподключение","reconnecting"):
+            output.active?phrase("в эфире","live"):phrase("ожидание","waiting");
+        const auto color=output.reconnecting?"#ffdc45":output.active?"#07df91":"#8ea1c0";
+        const auto bitrate=output.countersMissing?QString::fromUtf8("—"):rate(output.kbps);
+        outputRows.push_back(QString("<span style='color:%1'>●</span> <b>%2</b> · %3 · <span style='color:#72e9f4'>%4</span>")
+            .arg(color,name,status,bitrate.toHtmlEscaped()));
+    }
+    streamOutputs_->setVisible(!outputRows.isEmpty());
+    streamOutputs_->setText(outputRows.join("<br>"));
     streamBytes_->setText(bytesText(value.stream.totalBytes,locale));
     const double loss=value.stream.frames?100.0*double(value.stream.dropped)/double(value.stream.frames):0;
     streamDrop_->setText(locale.toString(value.stream.dropped)+" ("+locale.toString(loss,'f',1)+" %)");

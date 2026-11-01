@@ -12,10 +12,16 @@ int main() {
         if(initial.activeOutputs!=3||initial.outputNames.size()!=3)return 14;
         twitch.bytes=1000000;youtube.bytes=2000000;kick.bytes=1500000;
         const auto total=three.update({twitch,youtube,kick,kick},1.0);
-        if(total.activeOutputs!=3||std::abs(total.kbps-36000.0)>0.01||total.totalBytes!=4500000||!total.outputNames.contains("Kick"))return 15;
+        if(total.activeOutputs!=3||std::abs(total.kbps-36000.0)>0.01||total.totalBytes!=4500000||!total.outputNames.contains("Kick")||
+           total.outputs.size()!=3||std::abs(total.outputs[0].kbps-8000.0)>0.01||
+           std::abs(total.outputs[1].kbps-16000.0)>0.01||std::abs(total.outputs[2].kbps-12000.0)>0.01)return 15;
         kick.active=false;twitch.bytes+=1000000;youtube.bytes+=2000000;
         const auto stopped=three.update({twitch,youtube,kick},1.0);
-        if(stopped.activeOutputs!=2||std::abs(stopped.kbps-24000.0)>0.01||stopped.totalBytes!=7500000)return 16;
+        if(stopped.activeOutputs!=2||std::abs(stopped.kbps-24000.0)>0.01||stopped.totalBytes!=7500000||
+           stopped.outputs.size()!=2)return 16;
+        youtube.active=false;youtube.reconnecting=true;
+        const auto reconnecting=three.update({twitch,youtube},1.0);
+        if(reconnecting.outputs.size()!=2||!reconnecting.outputs[1].reconnecting||reconnecting.outputs[1].active)return 17;
     }
     stats::StreamAccumulator accumulator;
     stats::OutputReading first;first.identity=1;first.active=true;first.stream=true;

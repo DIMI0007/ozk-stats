@@ -56,6 +56,7 @@ private:
     QLabel *cpuObs_=nullptr,*cpuPc_=nullptr,*gpu_=nullptr,*ramObs_=nullptr,*ramFree_=nullptr;
     QLabel *fps_=nullptr,*render_=nullptr,*renderDrop_=nullptr,*encodeDrop_=nullptr;
     QLabel *streamStatus_=nullptr,*streamBitrate_=nullptr,*streamCount_=nullptr,*streamBytes_=nullptr,*streamDrop_=nullptr;
+    QLabel *streamOutputs_=nullptr;
     QLabel *recordStatus_=nullptr,*recordBitrate_=nullptr,*recordFile_=nullptr,*recordSpeed_=nullptr;
     QLabel *recordTime_=nullptr,*recordDisk_=nullptr,*recordEta_=nullptr;
     QLabel* footer_=nullptr;
