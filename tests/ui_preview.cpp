@@ -20,6 +20,8 @@ int main(int argc,char** argv) {
     stats::StatsDock dock(&host);
     std::fprintf(stderr,"Preview panel constructed\n");std::fflush(stderr);
     dock.previewSamples(75);
+    auto* streamOutputs=dock.findChild<QLabel*>("StreamOutputs");
+    if(!streamOutputs||!streamOutputs->text().contains("Twitch")||!streamOutputs->text().contains("YouTube"))return 19;
     if(dock.findChildren<QLabel*>("Credit").size()!=1||
        dock.findChildren<QPushButton*>("PeersToggle").size()!=1||
        dock.findChildren<QWidget*>("PeersPanel").size()!=1||

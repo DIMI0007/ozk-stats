@@ -15,6 +15,7 @@ Snapshot Collector::sample() {
     value.system.renderFrames=54974;value.system.encodeFrames=54974;
     value.stream.active=true;value.stream.activeOutputs=2;
     value.stream.kbps=32200+double(tick%8)*700;
+    value.stream.outputs={{"Twitch",true,false,false,12000.0},{"YouTube",true,false,false,value.stream.kbps-12000.0}};
     value.stream.totalBytes=quint64(19.36*1024*1024*1024);
     value.stream.frames=54974;
     value.record.active=true;value.record.kbps=48500+double(tick%6)*400;
