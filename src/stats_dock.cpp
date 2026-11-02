@@ -416,6 +416,17 @@ StatsDock::StatsDock(QWidget* parent):QWidget(parent) {
       QPushButton#SettingsButton{color:#e1ebff;background:qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #202a3b,stop:1 #141d2b);border:1px solid #39465d;border-radius:8px;padding:0;}
       QPushButton#SettingsButton:hover{background:#26344d;border-color:#6476a0;}
       QPushButton#ActiveRange{background:#102c29;border-color:#00d58a;color:#b8ffe1;}
+      QWidget#StatsSettingsPage,QWidget#StatsSettingsContent,QWidget#StatsSettingsViewport{background:#080f18;color:#dfe8ff;font-size:12px;}
+      QFrame#StatsSettingsCard{background:qlineargradient(x1:0,y1:0,x2:1,y2:1,stop:0 #101925,stop:1 #0b131e);border:1px solid #263244;border-radius:8px;}
+      QLabel#StatsSettingsSection{color:#edf3ff;font-size:13px;font-weight:700;}
+      QLabel#StatsSettingsHint{color:#8ea1c0;font-size:11px;}
+      QWidget#StatsSettingsPage QPushButton{color:#e1ebff;background:qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #202a3b,stop:1 #141d2b);border:1px solid #39465d;border-radius:8px;min-height:20px;padding:3px 7px;font-size:12px;}
+      QWidget#StatsSettingsPage QPushButton:hover{background:#26344d;border-color:#6476a0;}
+      QWidget#StatsSettingsPage QPushButton:checked{background:qlineargradient(x1:0,y1:0,x2:1,y2:1,stop:0 #18203c,stop:1 #111e50);border:1px solid #303e6c;border-bottom:2px solid #6547ff;font-weight:700;}
+      QWidget#StatsSettingsPage QCheckBox{color:#dce7fb;spacing:6px;min-height:20px;font-size:12px;}
+      QWidget#StatsSettingsPage QCheckBox::indicator{width:16px;height:16px;}
+      QWidget#StatsSettingsPage QCheckBox::indicator:unchecked{border-radius:4px;background:#344357;border:1px solid #65748d;}
+      QWidget#StatsSettingsPage QCheckBox::indicator:checked{border-radius:4px;background:#00d37d;border:1px solid #2ff9a0;}
       QScrollArea{border:0;background:transparent;}
       QScrollArea QWidget#CardHost{background:transparent;}
     )");
@@ -620,14 +631,26 @@ QWidget* StatsDock::buildHome() {
 }
 
 QWidget* StatsDock::buildSettings() {
-    auto* page=new QWidget;auto* outer=new QVBoxLayout(page);outer->setContentsMargins(9,8,9,8);outer->setSpacing(8);
+    auto* page=new QWidget;page->setObjectName("StatsSettingsPage");
+    auto* outer=new QVBoxLayout(page);outer->setContentsMargins(8,8,8,8);outer->setSpacing(7);
     auto* top=new QHBoxLayout;
-    auto* back=new QPushButton(phrase("← Назад","← Back"));back->setFixedSize(70,29);
+    auto* back=new QPushButton(phrase("← Назад","← Back"));back->setFixedWidth(70);
     QObject::connect(back,&QPushButton::clicked,this,[this]{pages_->setCurrentWidget(home_);});
     top->addWidget(back);auto* title=new QLabel(phrase("Настройки","Settings"));title->setObjectName("DockTitle");
     top->addWidget(title,1);outer->addLayout(top);
-    auto* label=new QLabel(phrase("Язык интерфейса","Interface language"));outer->addWidget(label);
-    auto* choices=new QHBoxLayout;choices->setSpacing(5);
+    auto* scroll=new QScrollArea;scroll->setWidgetResizable(true);
+    scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scroll->viewport()->setObjectName("StatsSettingsViewport");
+    auto* content=new QWidget;content->setObjectName("StatsSettingsContent");
+    auto* settings=new QVBoxLayout(content);settings->setContentsMargins(0,0,0,0);settings->setSpacing(7);
+    auto addCard=[settings](const QString& heading){
+        auto* frame=new QFrame;frame->setObjectName("StatsSettingsCard");
+        auto* column=new QVBoxLayout(frame);column->setContentsMargins(9,7,9,8);column->setSpacing(6);
+        auto* label=new QLabel(heading);label->setObjectName("StatsSettingsSection");label->setWordWrap(true);
+        column->addWidget(label);settings->addWidget(frame);return column;
+    };
+    auto* languageCard=addCard(phrase("Язык интерфейса","Interface language"));
+    auto* choices=new QHBoxLayout;choices->setSpacing(4);
     const struct {const char* code;const char* ru;const char* en;} items[]={
         {"auto","Авто","Auto"},{"ru","Русский","Russian"},{"en","English","English"}};
     for(const auto& item:items){
@@ -636,13 +659,14 @@ QWidget* StatsDock::buildSettings() {
         QObject::connect(button,&QPushButton::clicked,this,[this,code=QString::fromLatin1(item.code)]{setLanguage(code);});
         choices->addWidget(button,1);
     }
-    outer->addLayout(choices);
+    languageCard->addLayout(choices);
     auto* hint=new QLabel(phrase("Графики обновляются раз в секунду. История хранится только в памяти OBS и очищается при закрытии программы.",
         "Charts update once per second. History stays in OBS memory and clears when OBS exits."));
-    hint->setWordWrap(true);hint->setObjectName("MetricName");outer->addWidget(hint);
+    hint->setWordWrap(true);hint->setObjectName("StatsSettingsHint");languageCard->addWidget(hint);
+    auto* behaviorCard=addCard(phrase("Поведение панели","Panel behavior"));
     auto* warnings=new QCheckBox(phrase("Предупреждения о кадрах и диске","Frame loss and disk warnings"));
     warnings->setChecked(warningsEnabled_);warnings->setToolTip(phrase("Кадры: потери выше 1% за последние 10 секунд. Диск: меньше 5 ГБ или 15 минут записи в течение 30 секунд.","Frames: over 1% loss in the last 10 seconds. Disk: under 5 GB or 15 minutes remaining for 30 seconds."));
-    QObject::connect(warnings,&QCheckBox::toggled,this,[this](bool on){warningsEnabled_=on;QSettings saved(configFile(),QSettings::IniFormat);saved.setValue("warningsEnabled",on);if(!on&&warningLabel_)warningLabel_->hide();});outer->addWidget(warnings);
+    QObject::connect(warnings,&QCheckBox::toggled,this,[this](bool on){warningsEnabled_=on;QSettings saved(configFile(),QSettings::IniFormat);saved.setValue("warningsEnabled",on);if(!on&&warningLabel_)warningLabel_->hide();});behaviorCard->addWidget(warnings);
     auto* autoCollapse=new QCheckBox;
     autoCollapse->setObjectName("AutoCollapseRecording");autoCollapse->setChecked(autoCollapseRecording_);
     auto* autoCollapseRow=new QHBoxLayout;autoCollapseRow->setSpacing(6);
@@ -651,10 +675,11 @@ QWidget* StatsDock::buildSettings() {
     autoCollapseRow->addWidget(autoCollapse);autoCollapseRow->addWidget(autoCollapseLabel,1);
     QObject::connect(autoCollapse,&QCheckBox::toggled,this,[this](bool on){
         autoCollapseRecording_=on;QSettings saved(configFile(),QSettings::IniFormat);saved.setValue("autoCollapseRecording",on);
-    });outer->addLayout(autoCollapseRow);
+    });behaviorCard->addLayout(autoCollapseRow);
+    auto* sessionCard=addCard(phrase("Сеанс OBS","OBS session"));
     auto* summary=new QPushButton(phrase("Сводка текущего сеанса","Current session summary"));summary->setObjectName("SessionSummaryButton");
-    QObject::connect(summary,&QPushButton::clicked,this,[this]{showSummary();});outer->addWidget(summary);
-    outer->addStretch(1);return page;
+    QObject::connect(summary,&QPushButton::clicked,this,[this]{showSummary();});sessionCard->addWidget(summary);
+    settings->addStretch(1);scroll->setWidget(content);outer->addWidget(scroll,1);return page;
 }
 
 void StatsDock::setRange(int minutes){

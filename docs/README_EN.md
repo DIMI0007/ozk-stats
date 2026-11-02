@@ -20,7 +20,7 @@ OZK Stats works on its own for system, streaming and recording statistics. Three
 
 ## Install
 
-1. Close OBS. Download the [OZK Stats 1.1.5 archive](https://github.com/DIMI0007/ozk-stats/releases/tag/v1.1.5) and extract the ZIP.
+1. Close OBS. Download the [OZK Stats 1.1.6 archive](https://github.com/DIMI0007/ozk-stats/releases/tag/v1.1.6) and extract the ZIP.
 2. Open `C:\ProgramData\obs-studio\plugins\`. Replace the old `stream-stats` folder with the complete folder from the ZIP.
 3. Start OBS and open **Docks → OZK Stats**.
 

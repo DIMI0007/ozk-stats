@@ -81,6 +81,10 @@ int main(int argc,char** argv) {
     dock.previewSamples(1);app.processEvents();if(recordDetails->isVisible())return 15;
     dock.previewOffline();app.processEvents();if(recordDetails->isChecked()||!recordDetails->isVisible())return 16;
     gear->click();app.processEvents();
+    auto* settingsPage=dock.findChild<QWidget*>("StatsSettingsPage");
+    if(!settingsPage||!settingsPage->isVisible()||
+       dock.findChildren<QFrame*>("StatsSettingsCard").size()!=3||
+       !dock.grab().save(output+"/settings-310x900.png"))return 20;
     auto* summary=dock.findChild<QPushButton*>("SessionSummaryButton");if(!summary)return 12;summary->click();app.processEvents();
     auto* summaryText=dock.findChild<QLabel*>("SessionSummaryText");if(!summaryText||summaryText->text().isEmpty())return 13;
     if(!dock.grab().save(output+"/session-summary.png"))return 14;
