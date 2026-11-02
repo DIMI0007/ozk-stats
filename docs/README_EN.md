@@ -20,7 +20,7 @@ OZK Stats works on its own for system, streaming and recording statistics. Three
 
 ## Install
 
-1. Close OBS. Download **OZKStats-1.1.4-OBS33-Windows-x64** from the [latest successful build](https://github.com/DIMI0007/ozk-stats/actions/workflows/build-windows.yml) and extract the ZIP.
+1. Close OBS. Download the [OZK Stats 1.1.5 archive](https://github.com/DIMI0007/ozk-stats/releases/tag/v1.1.5) and extract the ZIP.
 2. Open `C:\ProgramData\obs-studio\plugins\`. Replace the old `stream-stats` folder with the complete folder from the ZIP.
 3. Start OBS and open **Docks → OZK Stats**.
 
@@ -30,6 +30,6 @@ For OBS Studio 33 on Windows x64. The build is unsigned. GPU usage covers all ap
 
 If these plugins help your streams, please consider a donation. Your support helps improve the plugins, fix issues and fund future development.
 
-[Support via DonationAlerts](https://www.donationalerts.com/r/otmopozok) · [Support via DonatePay](https://donatepay.ru/don/OTMOPOZOK)
+[Support the project](https://dalink.to/otmopozok) · [DonationAlerts](https://www.donationalerts.com/r/otmopozok) · [DonatePay](https://donatepay.ru/don/OTMOPOZOK)
 
 [Русский](../README.md) · [GPL v2 or later](../LICENSE_NOTICE.md)
