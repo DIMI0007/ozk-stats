@@ -12,11 +12,11 @@ System load, streaming and recording in one OBS panel. The layout works vertical
 - Recording speed, file size, duration and free disk space.
 - Charts covering 1, 5 or 15 minutes, with values under the pointer.
 - Optional frame loss and low disk warnings, plus a session summary that can be saved as CSV.
-- A collapsed “Our plugins” section showing measured CPU and tracked data for Chat, Notify and Stats. It also shows Chat and Notify network traffic, their local link status and combined traffic since OBS started. Units grow from KB to MB and GB. CPU and data cover instrumented work and tracked buffers, not the full OBS process.
+- A collapsed “Our plugins” section showing measured CPU, tracked data, local link status, and network traffic for OZK Chat, OZK Notify, and OZK Donations. It also shows combined traffic since OBS started. Units grow from KB to MB and GB. CPU and data cover instrumented work and tracked buffers, not the full OBS process.
 
 ## How the plugins work together
 
-OZK Stats works on its own for system, streaming and recording statistics. Three separate Twitch, YouTube and Kick outputs appear as three streams and their bitrate is added together. If Chat or Notify is installed, Stats reads its local counters inside OBS. A missing plugin appears as “Not loaded.” Stats does not receive chat messages, send announcements or transfer network traffic between plugins.
+OZK Stats works on its own for system, streaming and recording statistics. Three separate Twitch, YouTube and Kick outputs appear as three streams and their bitrate is added together. If Chat, Notify, or Donations is installed, Stats reads its local counters inside OBS. A missing plugin appears as “Not loaded.” Stats does not receive chat messages, send announcements or transfer network traffic between plugins.
 
 ## Install
 

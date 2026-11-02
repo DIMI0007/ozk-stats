@@ -572,11 +572,11 @@ QWidget* StatsDock::buildHome() {
     peersToggle_=new QPushButton(phrase("▸ Наши плагины","▸ Our plugins"));
     peersToggle_->setObjectName("PeersToggle");peersToggle_->setCheckable(true);
     peersToggle_->setFixedHeight(16);
-    peersToggle_->setToolTip(phrase("Трафик Chat и Notify за текущий запуск OBS. Связь означает доступность их локальных счётчиков.",
-        "Chat and Notify traffic since OBS started. Connected means their local counters are reachable."));
+    peersToggle_->setToolTip(phrase("Трафик Chat, Notify и Donations за текущий запуск OBS. Связь означает доступность их локальных счётчиков.",
+        "Chat, Notify and Donations traffic since OBS started. Connected means their local counters are reachable."));
     peersPanel_=new QWidget;peersPanel_->setObjectName("PeersPanel");
     auto* peersLayout=new QVBoxLayout(peersPanel_);peersLayout->setContentsMargins(7,5,7,5);peersLayout->setSpacing(3);
-    const char* names[]={"OZK Chat","OZK Notify","OZK Stats"};
+    const char* names[]={"OZK Chat","OZK Notify","OZK Donations"};
     for(int i=0;i<3;++i){
         auto* peer=new QWidget;peer->setObjectName("PeerRow");
         auto* peerLayout=new QVBoxLayout(peer);peerLayout->setContentsMargins(5,3,5,3);peerLayout->setSpacing(1);
@@ -947,15 +947,14 @@ void StatsDock::updatePeers(){
     const PeerTraffic readings[]={
         readPeerTraffic(L"stream-chat-obs.dll","stream_chat_telemetry_v1","stream_chat_telemetry_v2"),
         readPeerTraffic(L"stream-notify.dll","stream_notify_telemetry_v1","stream_notify_telemetry_v2"),
-        PeerTraffic{true,0,0,selfCpuNs.load(std::memory_order_relaxed),sizeof(*this),true,PeerState::Connected}};
+        readPeerTraffic(L"ozk-donations.dll","ozk_donations_telemetry_v1","ozk_donations_telemetry_v2")};
     const double elapsedNs=peerClock_.isValid()?double(peerClock_.nsecsElapsed()):0.0;
     peerClock_.restart();
     quint64 sent=0,received=0;
     for(int i=0;i<3;++i){
         const auto& reading=readings[i];
         sent+=reading.sent;received+=reading.received;
-        peerTraffic_[i]->setText(i==2?phrase("Фоновых сетевых запросов нет","No background network requests"):
-            QString::fromUtf8("↑ ")+peerBytes(reading.sent,locale)+
+        peerTraffic_[i]->setText(QString::fromUtf8("↑ ")+peerBytes(reading.sent,locale)+
             QString::fromUtf8("  ↓ ")+peerBytes(reading.received,locale));
         QString cpu="—";
         if(reading.hasResources&&peerCpuReady_[i]&&elapsedNs>0&&elapsedNs<10e9&&reading.cpuNs>=peerCpuNs_[i]){
@@ -966,7 +965,7 @@ void StatsDock::updatePeers(){
         peerResources_[i]->setText(reading.hasResources?
             "CPU "+cpu+QString::fromUtf8(" · ")+phrase("данные ","data ")+peerBytes(reading.dataBytes,locale):QString());
         peerCpuNs_[i]=reading.cpuNs;peerCpuReady_[i]=reading.hasResources;
-        peerStatus_[i]->setText(i==2?phrase("● Здесь","● Here"):reading.connected?phrase("● Связь","● Linked"):
+        peerStatus_[i]->setText(reading.connected?phrase("● Связь","● Linked"):
             reading.state==PeerState::Unsupported?phrase("● Нужна новая версия","● Update needed"):
             reading.state==PeerState::NoResponse?phrase("● Нет ответа","● No response"):phrase("● Не загружен","● Not loaded"));
         peerStatus_[i]->setToolTip(reading.state==PeerState::NotLoaded?phrase("Плагин выключен, не установлен или не смог загрузиться в OBS.","Plugin is disabled, not installed or failed to load in OBS."):
