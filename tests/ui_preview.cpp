@@ -34,15 +34,15 @@ int main(int argc,char** argv) {
     if(!peersToggle||!peersPanel||peersToggle->isChecked()||!peersPanel->isHidden())return 8;
     auto* logo=dock.findChild<QWidget*>("StatsMark");
     auto* gear=dock.findChild<QPushButton*>("SettingsButton");
-    if(!logo||logo->size()!=QSize(28,28)||!gear||gear->size()!=QSize(30,22)||
+    if(!logo||logo->size()!=QSize(28,28)||!gear||gear->size()!=QSize(30,28)||
        gear->iconSize()!=QSize(19,19)||gear->icon().isNull())return 6;
     std::fprintf(stderr,"Preview samples prepared\n");std::fflush(stderr);
     auto capture=[&](const char* file,int width,int height,bool requireNoScroll){
         std::fprintf(stderr,"Capture %s begin\n",file);std::fflush(stderr);
         dock.resize(width,height);dock.show();app.processEvents(QEventLoop::AllEvents,200);
         for(auto* button:dock.findChildren<QPushButton*>()){
-            if(button->property("HistoryRange").toBool()&&button->height()!=gear->height()){
-                std::fprintf(stderr,"History button height %d differs from settings button %d\n",button->height(),gear->height());return false;
+            if(button->property("HistoryRange").toBool()&&button->height()!=22){
+                std::fprintf(stderr,"History button height %d differs from 22px target\n",button->height());return false;
             }
         }
         std::fprintf(stderr,"Capture %s laid out\n",file);std::fflush(stderr);

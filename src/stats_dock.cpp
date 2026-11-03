@@ -492,7 +492,7 @@ QWidget* StatsDock::buildHome() {
         QObject::connect(button,&QPushButton::clicked,this,[this,minutes]{setRange(minutes);});
         top->addWidget(button,0,Qt::AlignVCenter);rangeButtons_.append(button);
     }
-    auto* gear=new QPushButton;gear->setObjectName("SettingsButton");gear->setFixedSize(30,22);
+    auto* gear=new QPushButton;gear->setObjectName("SettingsButton");gear->setFixedSize(30,28);
     gear->setIcon(settingsIcon());gear->setIconSize(QSize(19,19));
     gear->setToolTip(phrase("Настройки","Settings"));
     QObject::connect(gear,&QPushButton::clicked,this,[this]{pages_->setCurrentWidget(settings_);});
@@ -774,7 +774,7 @@ void StatsDock::arrangeCards(){
     if(auto* mark=home_->findChild<QWidget*>("StatsMark"))mark->setFixedSize(28,28);
     for(auto* mark:home_->findChildren<QWidget*>("SectionIcon"))
         mark->setFixedSize(roomy?28:18,roomy?28:18);
-    if(auto* gear=home_->findChild<QPushButton*>("SettingsButton"))gear->setFixedSize(30,22);
+    if(auto* gear=home_->findChild<QPushButton*>("SettingsButton"))gear->setFixedSize(30,28);
     if(systemSelector_)systemSelector_->setFixedSize(roomy?120:wide?74:87,roomy?29:20);
     if(streamCount_)streamCount_->setStyleSheet(QString("color:#ffe184;background:#24301f;border:1px solid #70571b;border-radius:7px;font-size:%1px;font-weight:700;padding:1px 6px;").arg(roomy?14:10));
     for(auto* button:rangeButtons_){
