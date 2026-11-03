@@ -1,9 +1,10 @@
+#include "ozk_performance.hpp"
 #include "stats_collector.hpp"
 #ifdef STREAM_STATS_PREVIEW
 namespace stats {
 Collector::Collector() {clock_.start();}
 Collector::~Collector() = default;
-Snapshot Collector::sample() {
+Snapshot Collector::sample() {ozkperf::Scope perf(Q_FUNC_INFO);
     static int tick=0;++tick;
     Snapshot value;
     value.system.cpuPc=12.0+double(tick%6);
@@ -116,15 +117,18 @@ bool collectOutput(void* opaque,obs_output_t* output) {
 } // namespace
 
 Collector::Collector() {
+    ozkperf::install();
+    diskWorker_.setMaxThreadCount(1);
     clock_.start();
     gpuThread_=std::thread([this]{gpuLoop();});
 }
 Collector::~Collector() {
+    diskWorker_.waitForDone();
     stopGpu_=true;gpuWake_.notify_all();
     if(gpuThread_.joinable())gpuThread_.join();
 }
 
-Snapshot Collector::sample() {
+Snapshot Collector::sample() {ozkperf::Scope perf(Q_FUNC_INFO);
     Snapshot result;
     const qint64 nowMs=clock_.elapsed();
     const double seconds=previousMs_>0?double(nowMs-previousMs_)/1000.0:0;
@@ -197,7 +201,7 @@ Snapshot Collector::sample() {
             if(settings){
                 for(const char* key:{"path","url"}){
                     const QString candidate=QString::fromUtf8(obs_data_get_string(settings,key));
-                    if(!candidate.isEmpty()&&QFileInfo(candidate).isFile()){
+                    if(!candidate.isEmpty()){
                         currentFile=candidate;break;
                     }
                 }
@@ -211,23 +215,24 @@ Snapshot Collector::sample() {
             recordSmoothedBytesPerSecond_=0;
         }
         const quint64 processed=recordOutput?obs_output_get_total_bytes(recordOutput):0;
-        QFileInfo file(currentFile);
-        if(!currentFile.isEmpty()&&file.isFile()){
-            result.record.fileSizeAvailable=true;
-            result.record.fileBytes=quint64(std::max<qint64>(0,file.size()));
+        if(nowMs-diskSampleMs_>=5000&&!diskBusy_.exchange(true)){
+            diskSampleMs_=nowMs;
+            diskWorker_.start([this,directory,currentFile]{
+                QFileInfo file(currentFile);const bool fileReady=!currentFile.isEmpty()&&file.isFile();
+                const quint64 bytes=fileReady?quint64(std::max<qint64>(0,file.size())):0;
+                QStorageInfo disk(directory);const bool ready=!directory.isEmpty()&&disk.isValid()&&disk.isReady();
+                const quint64 free=ready?quint64(std::max<qint64>(0,disk.bytesAvailable())):0;
+                {std::lock_guard<std::mutex> lock(diskMutex_);diskPath_=directory;diskFile_=currentFile;
+                    diskReady_=ready;fileReady_=fileReady;diskFree_=free;diskBytes_=bytes;}
+                diskBusy_=false;
+            });
         }
-        if(processed>0&&(!result.record.fileSizeAvailable||result.record.fileBytes==0)){
-            result.record.fileSizeAvailable=true;
-            result.record.fileSizeEstimated=true;
-            result.record.fileBytes=processed;
+        {std::lock_guard<std::mutex> lock(diskMutex_);
+            if(diskPath_==directory){result.record.diskAvailable=diskReady_;result.record.freeBytes=diskFree_;}
+            if(diskFile_==currentFile){result.record.fileSizeAvailable=fileReady_;result.record.fileBytes=diskBytes_;}
         }
-        if(!directory.isEmpty()&&QFileInfo(directory).isDir()){
-            const QStorageInfo disk(directory);
-            if(disk.isValid()&&disk.isReady()){
-                result.record.diskAvailable=true;
-                result.record.freeBytes=quint64(std::max<qint64>(0,disk.bytesAvailable()));
-            }
-        }
+        if(processed>0){result.record.fileSizeAvailable=true;result.record.fileSizeEstimated=true;
+            result.record.fileBytes=std::max(result.record.fileBytes,processed);}
         const quint64 current=processed?processed:result.record.fileBytes;
         if(recordPreviousReady_&&current>=recordPreviousBytes_&&seconds>0&&seconds<10&&!result.record.paused) {
             const double perSecond=double(current-recordPreviousBytes_)/seconds;

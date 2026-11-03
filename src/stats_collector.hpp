@@ -3,6 +3,7 @@
 #include "stats_model.hpp"
 #include <QElapsedTimer>
 #include <QString>
+#include <QThreadPool>
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
@@ -39,6 +40,13 @@ public:
     Snapshot sample();
 private:
     void gpuLoop();
+    QThreadPool diskWorker_;
+    std::mutex diskMutex_;
+    QString diskPath_,diskFile_;
+    quint64 diskFree_=0,diskBytes_=0;
+    bool diskReady_=false,fileReady_=false;
+    std::atomic<bool> diskBusy_{false};
+    qint64 diskSampleMs_=-10000;
     std::atomic<bool> stopGpu_{false};
     std::atomic<double> gpuPercent_{-1};
     std::mutex gpuMutex_;
