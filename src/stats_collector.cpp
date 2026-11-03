@@ -211,11 +211,11 @@ Snapshot Collector::sample() {ozkperf::Scope perf(Q_FUNC_INFO);
         if(!currentFile.isEmpty())directory=QFileInfo(currentFile).absolutePath();
         const QString pathKey=currentFile.isEmpty()?directory:currentFile;
         if(pathKey!=recordPath_){
-            recordPath_=pathKey;recordPreviousReady_=false;
+            recordPath_=pathKey;diskSampleMs_=-60000;recordPreviousReady_=false;
             recordSmoothedBytesPerSecond_=0;
         }
         const quint64 processed=recordOutput?obs_output_get_total_bytes(recordOutput):0;
-        if(nowMs-diskSampleMs_>=15000&&!diskBusy_.exchange(true)){
+        if(nowMs-diskSampleMs_>=60000&&!diskBusy_.exchange(true)){
             diskSampleMs_=nowMs;
             diskWorker_.start([this,directory,currentFile]{
                 QFileInfo file(currentFile);const bool fileReady=!currentFile.isEmpty()&&file.isFile();
@@ -246,7 +246,7 @@ Snapshot Collector::sample() {ozkperf::Scope perf(Q_FUNC_INFO);
         }
         recordPreviousBytes_=current;recordPreviousReady_=true;
     } else {
-        recordPath_.clear();recordWasActive_=false;recordElapsedSeconds_=0;recordPreviousReady_=false;
+        recordPath_.clear();diskSampleMs_=-60000;recordWasActive_=false;recordElapsedSeconds_=0;recordPreviousReady_=false;
         recordPreviousBytes_=0;recordSmoothedBytesPerSecond_=0;
     }
     if(recordOutput)obs_output_release(recordOutput);
