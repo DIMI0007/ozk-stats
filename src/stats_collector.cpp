@@ -215,7 +215,7 @@ Snapshot Collector::sample() {ozkperf::Scope perf(Q_FUNC_INFO);
             recordSmoothedBytesPerSecond_=0;
         }
         const quint64 processed=recordOutput?obs_output_get_total_bytes(recordOutput):0;
-        if(nowMs-diskSampleMs_>=5000&&!diskBusy_.exchange(true)){
+        if(nowMs-diskSampleMs_>=15000&&!diskBusy_.exchange(true)){
             diskSampleMs_=nowMs;
             diskWorker_.start([this,directory,currentFile]{
                 QFileInfo file(currentFile);const bool fileReady=!currentFile.isEmpty()&&file.isFile();

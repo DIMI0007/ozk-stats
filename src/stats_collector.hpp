@@ -46,7 +46,7 @@ private:
     quint64 diskFree_=0,diskBytes_=0;
     bool diskReady_=false,fileReady_=false;
     std::atomic<bool> diskBusy_{false};
-    qint64 diskSampleMs_=-10000;
+    qint64 diskSampleMs_=-15000;
     std::atomic<bool> stopGpu_{false};
     std::atomic<double> gpuPercent_{-1};
     std::mutex gpuMutex_;
