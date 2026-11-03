@@ -10,11 +10,17 @@
 
 [English](docs/README_EN.md)
 
-| Вертикально | Горизонтально |
-| --- | --- |
-| ![Вертикальная панель](docs/screenshots/vertical.png) | ![Горизонтальная панель](docs/screenshots/horizontal.png) |
+## Как выглядит
 
-[Компактный вид](docs/screenshots/compact.png) · [Узкий вид](docs/screenshots/narrow.png) · [Наши плагины](docs/screenshots/plugins-expanded.png)
+Снимки сделаны с примерными показателями без данных вашего компьютера и аккаунтов.
+
+| Вертикальная панель | Компактная горизонтальная панель |
+| --- | --- |
+| ![Вертикальная панель](docs/screenshots/vertical.png) | ![Компактная горизонтальная панель](docs/screenshots/compact.png) |
+| Настройки | После остановки эфира и записи |
+| ![Настройки OZK Stats](docs/screenshots/settings.png) | ![Панель без эфира и записи](docs/screenshots/offline.png) |
+
+[Широкий горизонтальный вид](docs/screenshots/horizontal.png) · [Узкий вид](docs/screenshots/narrow.png) · [Наши плагины](docs/screenshots/plugins-expanded.png) · [Сводка сеанса](docs/screenshots/session-summary.png)
 
 ## Что показывает
 
